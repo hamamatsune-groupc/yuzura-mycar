@@ -15,7 +15,7 @@ var App = new Vue({
   },
   mounted: function(){
     // テスト用データ
-    let jsondata = '{"Labels":[{"Name":"People","Confidence":98.94397735595703},{"Name":"Person","Confidence":98.94400024414062},{"Name":"Human","Confidence":98.89904022216797},{"Name":"Computer","Confidence":97.84500122070312},{"Name":"Electronics","Confidence":97.84500122070312},{"Name":"LCD Screen","Confidence":97.84500122070312},{"Name":"Laptop","Confidence":97.84500122070312},{"Name":"Pc","Confidence":97.84500122070312},{"Name":"Conference Room","Confidence":92.3609390258789},{"Name":"Indoors","Confidence":92.3609390258789},{"Name":"Meeting Room","Confidence":92.3609390258789},{"Name":"Room","Confidence":92.3609390258789},{"Name":"Cat","Confidence":50.15576934814453},{"Name":"Hardware","Confidence":82.62897491455078}]}';
+    let jsondata = '{"Labels":[{"Name":"People","Confidence":98.94397735595703},{"Name":"Person","Confidence":98.94400024414062},{"Name":"Human","Confidence":98.89904022216797},{"Name":"Computer","Confidence":97.84500122070312},{"Name":"Electronics","Confidence":97.84500122070312},{"Name":"LCD Screen","Confidence":97.84500122070312},{"Name":"Laptop","Confidence":97.84500122070312},{"Name":"Pc","Confidence":97.84500122070312},{"Name":"Conference Room","Confidence":92.3609390258789},{"Name":"Indoors","Confidence":92.3609390258789},{"Name":"Meeting Room","Confidence":92.3609390258789},{"Name":"Room","Confidence":92.3609390258789},{"Name":"Cat","Confidence":50.15576934814453},{"Name":"Car","Confidence":82.62897491455078}]}';
     this.result = JSON.parse(jsondata).Labels;
   },
   methods: {
