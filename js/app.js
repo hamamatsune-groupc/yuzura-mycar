@@ -26,11 +26,11 @@ var App = new Vue({
       var params = {
         Image: {
          S3Object: {
-          Bucket: "yuzura-mycar-us-east-1", 
+          Bucket: "yuzura-mycar-us-east-1",
           Name: "IMG_3266.jpg"
          }
-        }, 
-        MaxLabels: 123, 
+        },
+        MaxLabels: 123,
         MinConfidence: 70
        };
       var rekognition = new AWS.Rekognition();
@@ -52,7 +52,7 @@ var App = new Vue({
     onUploadToS3: function(file){
       if(file){
         var params = {
-          Key: file.name, 
+          Key: file.name,
           ContentType: file.type,
           ACL: "public-read",
           Body: file
@@ -61,7 +61,7 @@ var App = new Vue({
         AWS.config.accessKeyId = this.awsAccessKey;
         AWS.config.secretAccessKey = this.awsAccessSecret;
         AWS.config.region = this.s3Region;
-        var bucket = new AWS.S3({	
+        var bucket = new AWS.S3({
           params:{
             Bucket : this.s3Bucket
           }
@@ -87,6 +87,22 @@ var App = new Vue({
         this.uploadedImage = e.target.result;
       };
       reader.readAsDataURL(file);
+    },
+    //音を鳴らすよ
+    onSound: function(e) {
+      var minConfidence = 50;
+      this.result.forEach(function(label){
+        if (minConfidence <= label.Confidence)
+        {
+          if (label.Name == "Person")
+          {
+            var sound = new Howl({
+              src: ['mp3/walk-asphalt2.mp3'], volume : label.Confidence / 100
+            });
+            sound.play();
+          }
+        }
+      });
     }
   }
 })

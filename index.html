@@ -5,6 +5,7 @@
   <script src="js/vue.js"></script>
   <script src="js/superagent.js"></script>
   <script src="js/aws-sdk.js"></script>
+  <script src="js/howler.min.js"></script>
   <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous"> -->
   <!-- <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script> -->
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script> -->
@@ -20,15 +21,15 @@
 </head>
 <body>
   <div id="app">
-    <div class="section"> 
-        <div class="container"> 
-          <div class="row"> 
-            <div class="col-md-12"> 
-              <h1 class="text-center">Yuzura-Mycar</h1> 
+    <div class="section">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12">
+              <h1 class="text-center">Yuzura-Mycar</h1>
             </div>
           </div>
-          <div class="row"> 
-            <div class="col-md-offset-3 col-md-6"> 
+          <div class="row">
+            <div class="col-md-offset-3 col-md-6">
               <!-- <form role="form"> -->
                 <!-- <div class="form-group">
                   <label class="control-label" for="exampleInputEmail1">Email address</label>
@@ -41,9 +42,9 @@
                 <div class="form-group">
                   <label class="control-label">画像</label>
                   <input type="file" v-on:change="onFileChange">
-                  <div class="row"> 
-                    <div class="col-md-12"> 
-                      <a><img class="img-responsive" v-show="uploadedImage" :src="uploadedImage" /></a> 
+                  <div class="row">
+                    <div class="col-md-12">
+                      <a><img class="img-responsive" v-show="uploadedImage" :src="uploadedImage" /></a>
                     </div>
                   </div>
                   <div id="result"></div>
@@ -51,6 +52,7 @@
 
                 <button class="btn btn-primary" v-on:click="onSendS3">S3 upload</button>
                 <button class="btn btn-primary" v-on:click="onRekogition">Rekognition</button>
+                <button class="btn btn-primary" v-on:click="onSound">Sound</button>
               <!-- </form>  -->
             </div>
           </div>
