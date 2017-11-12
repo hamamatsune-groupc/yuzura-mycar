@@ -19,16 +19,123 @@
 
 </head>
 <body>
+  <div
+    class="fb-like"
+    data-share="true"
+    data-width="450"
+    data-show-faces="true">
+  </div>
+
+
+  <input type="file" id="file-chooser" />
+    <button id="upload-button" style="display:none">Upload to S3</button>
+    <div id="results"></div>
+    <div id="fb-root"></div>
+    <script type="text/javascript">
+        var appId = '1984191275151457';
+        var roleArn = 'arn:aws:iam::580796990244:role/yuzura-mycar-facebook-role';
+        var bucketName = 'yuzura-mycar-test';
+        AWS.config.region = 'us-east-1';
+
+        var fbUserId;
+        var bucket = new AWS.S3({
+            params: {
+                Bucket: bucketName
+            }
+        });
+
+        var fileChooser = document.getElementById('file-chooser');
+        var button = document.getElementById('upload-button');
+        var results = document.getElementById('results');
+
+        button.addEventListener('click', function () {
+            var file = fileChooser.files[0];
+            if (file) {
+                results.innerHTML = '';
+                //Object key will be facebook-USERID#/FILE_NAME
+                var objKey = 'facebook-' + fbUserId + '/' + file.name;
+                var params = {
+                    Key: objKey,
+                    ContentType: file.type,
+                    Body: file,
+                    ACL: 'public-read'
+                };
+
+                bucket.putObject(params, function (err, data) {
+                    if (err) {
+                        results.innerHTML = 'ERROR: ' + err;
+                    } else {
+                        listObjs();
+                    }
+                });
+            } else {
+                results.innerHTML = 'Nothing to upload.';
+            }
+        }, false);
+
+        function listObjs() {
+            var prefix = 'facebook-' + fbUserId;
+            bucket.listObjects({
+                Prefix: prefix
+            }, function (err, data) {
+                if (err) {
+                    results.innerHTML = 'ERROR: ' + err;
+                } else {
+                    var objKeys = "";
+                    data.Contents.forEach(function (obj) {
+                        objKeys += obj.Key + "<br>";
+                    });
+                    results.innerHTML = objKeys;
+                }
+            });
+        }
+        /*!
+         * Login to your application using Facebook.
+         * Uses the Facebook SDK for JavaScript available here:
+         * https://developers.facebook.com/docs/javascript/quickstart/
+         */
+
+        window.fbAsyncInit = function () {
+          FB.init({
+              appId: appId
+          });
+
+          FB.login(function (response) {
+              bucket.config.credentials = new AWS.WebIdentityCredentials({
+                  ProviderId: 'graph.facebook.com',
+                  RoleArn: roleArn,
+                  WebIdentityToken: response.authResponse.accessToken
+              });
+              fbUserId = response.authResponse.userID;
+              button.style.display = 'block';
+          })
+        };
+
+         // Load the Facebook SDK asynchronously
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "https://connect.facebook.net/en_US/all.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+
+
+
   <div id="app">
-    <div class="section"> 
-        <div class="container"> 
-          <div class="row"> 
-            <div class="col-md-12"> 
-              <h1 class="text-center">Yuzura-Mycar</h1> 
+    <div class="section">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12">
+              <h1 class="text-center">Yuzura-Mycar</h1>
             </div>
           </div>
-          <div class="row"> 
-            <div class="col-md-offset-3 col-md-6"> 
+          <div class="row">
+            <div class="col-md-offset-3 col-md-6">
               <!-- <form role="form"> -->
                 <!-- <div class="form-group">
                   <label class="control-label" for="exampleInputEmail1">Email address</label>
@@ -41,9 +148,9 @@
                 <div class="form-group">
                   <label class="control-label">画像</label>
                   <input type="file" v-on:change="onFileChange">
-                  <div class="row"> 
-                    <div class="col-md-12"> 
-                      <a><img class="img-responsive" v-show="uploadedImage" :src="uploadedImage" /></a> 
+                  <div class="row">
+                    <div class="col-md-12">
+                      <a><img class="img-responsive" v-show="uploadedImage" :src="uploadedImage" /></a>
                     </div>
                   </div>
                   <div id="result"></div>
@@ -80,6 +187,28 @@
       </div>
     </div>
   </div>
+
   <script src="js/app.js"></script>
+
+  <!-- <script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : '1984191275151457',
+        cookie     : true,
+        xfbml      : true,
+        version    : 'v2.11'
+      });
+      // FB.AppEvents.logPageView();
+    };
+    (function(d, s, id){
+       var js, fjs = d.getElementsByTagName(s)[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement(s); js.id = id;
+       js.src = "https://connect.facebook.net/en_US/sdk.js";
+       fjs.parentNode.insertBefore(js, fjs);
+     }(document, 'script', 'facebook-jssdk'));
+  </script> -->
+
 </body>
+
 </html>
