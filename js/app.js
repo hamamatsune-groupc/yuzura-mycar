@@ -11,14 +11,115 @@ var App = new Vue({
     s3Bucket: "yuzura-mycar",
     s3Region: "ap-northeast-1",
     result: [],
-    uploadedImage: ""
+    uploadedImage: "",
+    appId: "1984191275151457",
+    roleArn: "arn:aws:iam::580796990244:role/yuzura-mycar-facebook-role",
+    bucketName: "yuzura-mycar-test",
+    region: "us-east-1",
+    fbAuthenticated: false,
+    fbUserId: null,
+    bucket: null,
+    objects: []
+  },
+  created: function(){
+    this.initializeFacebook();
   },
   mounted: function(){
     // テスト用データ
-    let jsondata = '{"Labels":[{"Name":"People","Confidence":98.94397735595703},{"Name":"Person","Confidence":98.94400024414062},{"Name":"Human","Confidence":98.89904022216797},{"Name":"Computer","Confidence":97.84500122070312},{"Name":"Electronics","Confidence":97.84500122070312},{"Name":"LCD Screen","Confidence":97.84500122070312},{"Name":"Laptop","Confidence":97.84500122070312},{"Name":"Pc","Confidence":97.84500122070312},{"Name":"Conference Room","Confidence":92.3609390258789},{"Name":"Indoors","Confidence":92.3609390258789},{"Name":"Meeting Room","Confidence":92.3609390258789},{"Name":"Room","Confidence":92.3609390258789},{"Name":"Classroom","Confidence":92.15576934814453},{"Name":"Hardware","Confidence":82.62897491455078}]}';
-    this.result = JSON.parse(jsondata).Labels;
+    // let jsondata = '{"Labels":[{"Name":"People","Confidence":98.94397735595703},{"Name":"Person","Confidence":98.94400024414062},{"Name":"Human","Confidence":98.89904022216797},{"Name":"Computer","Confidence":97.84500122070312},{"Name":"Electronics","Confidence":97.84500122070312},{"Name":"LCD Screen","Confidence":97.84500122070312},{"Name":"Laptop","Confidence":97.84500122070312},{"Name":"Pc","Confidence":97.84500122070312},{"Name":"Conference Room","Confidence":92.3609390258789},{"Name":"Indoors","Confidence":92.3609390258789},{"Name":"Meeting Room","Confidence":92.3609390258789},{"Name":"Room","Confidence":92.3609390258789},{"Name":"Classroom","Confidence":92.15576934814453},{"Name":"Hardware","Confidence":82.62897491455078}]}';
+    // this.result = JSON.parse(jsondata).Labels;
+    this.bucket = new AWS.S3({
+      params: {
+          Bucket: this.bucketName
+      }
+    });
+  },
+  computed: {
+    s3UploadButtonActive: function(){
+      return this.fbAuthenticated ? "" : "display:none";
+    },
+    uploadResultActive: function(){
+      return this.objects.length > 0 ? "" : "display:none";
+    }
   },
   methods: {
+    onS3Upload: function(){
+      var fileChooser = document.getElementById('file-chooser');
+      var results = document.getElementById('results');
+
+      var file = fileChooser.files[0];
+      if (file) {
+          results.innerHTML = '';
+          //Object key will be facebook-USERID#/FILE_NAME
+          var objKey = 'facebook-' + App.fbUserId + '/' + file.name;
+          var params = {
+              Key: objKey,
+              ContentType: file.type,
+              Body: file,
+              ACL: 'public-read'
+          };
+
+          App.bucket.putObject(params, function (err, data) {
+              if (err) {
+                  results.innerHTML = 'ERROR: ' + err;
+              } else {
+                  this.listObjs();
+              }
+          }.bind(this));
+      } else {
+          results.innerHTML = 'Nothing to upload.';
+      }
+    },
+    listObjs: function(){
+      var results = document.getElementById('results');
+      var prefix = 'facebook-' + App.fbUserId;
+      this.bucket.listObjects({
+          Prefix: prefix
+      }, function (err, data) {
+          if (err) {
+              results.innerHTML = 'ERROR: ' + err;
+          } else {
+              var objKeys = "";
+              data.Contents.forEach(function (obj) {
+                  objKeys += obj.Key + "<br>";
+              });
+              results.innerHTML = objKeys;
+              this.objects = data.Contents;
+          }
+      }.bind(this));
+    },
+    initializeFacebook: function(){
+      window.fbAsyncInit = function () {
+        FB.init({
+            appId: App.appId,
+            cookie     : true,
+            xfbml      : true,
+            version    : 'v2.11'
+        });
+
+        FB.login(function (response) {
+          App.bucket.config.credentials = new AWS.WebIdentityCredentials({
+              ProviderId: 'graph.facebook.com',
+              RoleArn: App.roleArn,
+              WebIdentityToken: response.authResponse.accessToken
+          });
+          App.fbUserId = response.authResponse.userID;
+          App.fbAuthenticated = true;
+        })
+      };
+
+       // Load the Facebook SDK asynchronously
+      (function (d, s, id) {
+          var js, fjs = d.getElementsByTagName(s)[0];
+          if (d.getElementById(id)) {
+              return;
+          }
+          js = d.createElement(s);
+          js.id = id;
+          js.src = "https://connect.facebook.net/en_US/all.js";
+          fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
+    },
     onRekogition: function(){
       AWS.config.accessKeyId = this.awsAccessKey;
       AWS.config.secretAccessKey = this.awsAccessSecret;
@@ -26,11 +127,11 @@ var App = new Vue({
       var params = {
         Image: {
          S3Object: {
-          Bucket: "yuzura-mycar-us-east-1", 
+          Bucket: "yuzura-mycar-us-east-1",
           Name: "IMG_3266.jpg"
          }
-        }, 
-        MaxLabels: 123, 
+        },
+        MaxLabels: 123,
         MinConfidence: 70
        };
       var rekognition = new AWS.Rekognition();
@@ -40,41 +141,9 @@ var App = new Vue({
         }
         else {
           console.log(data);           // successful response
-          this.result = data.Labels;
+          App.result = data.Labels;
         }
       }.bind(this));
-    },
-    onSendS3: function(){
-      // this.onUploadToS3();
-      var file = window.file.files[0];
-      this.onUploadToS3(file);
-    },
-    onUploadToS3: function(file){
-      if(file){
-        var params = {
-          Key: file.name, 
-          ContentType: file.type,
-          ACL: "public-read",
-          Body: file
-        };
-
-        AWS.config.accessKeyId = this.awsAccessKey;
-        AWS.config.secretAccessKey = this.awsAccessSecret;
-        AWS.config.region = this.s3Region;
-        var bucket = new AWS.S3({	
-          params:{
-            Bucket : this.s3Bucket
-          }
-        });
-
-        bucket.putObject(params, function(err, data){
-          App.fileName = file.name;
-          document.getElementById("button_modal").click();
-        });
-      }
-      else{
-        // error
-      }
     },
     onFileChange: function(e) {
       let files = e.target.files || e.dataTransfer.files;
