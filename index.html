@@ -23,7 +23,7 @@
       <div class="container">
         <div class="row">
           <div class="col-md-12">
-            <img src="/images/yuzura-mycar.png" class="center-block img-responsive" id="logo">
+            <a href="/"><img src="/images/yuzura-mycar.png" class="center-block img-responsive" id="logo"></a>
           </div>
         </div>
       </div>
@@ -31,16 +31,20 @@
     <div class="section section-primary">
       <div class="container">
         <div class="row">
-          <div class="col-md-12">
-            <h1 class="text-center">Select Image<br></h1>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-offset-3 col-md-6">
+          <div class="col-md-offset-4 col-md-6">
             <form role="form">
               <div class="form-group">
                 <div class="input-group input-group-lg">
-                  <input type="file" id="file-chooser" class="form-control" v-on:change="onFileChange">
+                  <div class="input-group">
+                    <label class="input-group-btn">
+                      <span class="btn btn-success">
+                        <!-- Choose File<input type="file" style="display:none"> -->
+                        Choose File<input type="file" style="display:none" id="file-chooser" class="form-control" v-on:change="onFileChange">
+                      </span>
+                    </label>
+                    <input type="text" class="form-control" readonly="">
+                  </div>
+
                   <div id="result"></div>
                 </div>
               </div>
@@ -64,6 +68,7 @@
           </div>
           <div class="col-md-6">
             <h3>Rekognition result</h3>
+            <span><i class='fa fa-spinner fa-spin' v-show="onRekognitionProcessing"></i></span>
             <table class="table table-bordered">
               <thead>
                 <tr>
