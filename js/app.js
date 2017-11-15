@@ -2,14 +2,8 @@ var App = new Vue({
   name: "app",
   el: "#app",
   data: {
-    message: "Hey!",
-    message: 'Hello Vue!',
     fileName: "",
-    fileUrl: "",
-    awsAccessKey: "",
-    awsAccessSecret: "",
-    s3Bucket: "yuzura-mycar",
-    s3Region: "us-east-1",
+    fileKey: "",
     result: [],
     uploadedImage: "",
     appId: "1984191275151457",
@@ -19,7 +13,9 @@ var App = new Vue({
     fbAuthenticated: true,
     fbUserId: "",
     bucket: null,
-    objects: []
+    objects: [],
+    onS3Uploading: false,
+    onRekognitionProcessing: false
   },
   created: function(){
     this.initializeFacebook();
@@ -43,28 +39,44 @@ var App = new Vue({
     }
   },
   methods: {
+    startS3Process: function(){
+      this.onS3Uploading = true;
+    },
+    endS3Process: function(){
+      this.onS3Uploading = false;
+    },
+    startRekognitionProcess: function(){
+      this.onRekognitionProcessing = true;
+    },
+    endRekognitionProcess: function(){
+      this.onRekognitionProcessing = false;
+    },
     onS3Upload: function(){
+      App.startS3Process();
       var fileChooser = document.getElementById('file-chooser');
       var results = document.getElementById('results');
 
       var file = fileChooser.files[0];
       if (file) {
           results.innerHTML = '';
-          //Object key will be facebook-USERID#/FILE_NAME
-          var objKey = 'facebook-' + App.fbUserId + '/' + file.name;
+          App.fileName = file.name;
+          App.fileKey = 'facebook-' + App.fbUserId + '/' + file.name;
           var params = {
-              Key: objKey,
+              Key: App.fileKey,
               ContentType: file.type,
               Body: file,
               ACL: 'public-read'
           };
 
           App.bucket.putObject(params, function (err, data) {
-              if (err) {
-                  results.innerHTML = 'ERROR: ' + err;
-              } else {
-                  this.listObjs();
-              }
+            if (err) {
+                results.innerHTML = 'ERROR: ' + err;
+            } else {
+                this.listObjs();
+            }
+
+            App.endS3Process();
+
           }.bind(this));
       } else {
           results.innerHTML = 'Nothing to upload.';
@@ -120,24 +132,25 @@ var App = new Vue({
           fjs.parentNode.insertBefore(js, fjs);
       }(document, 'script', 'facebook-jssdk'));
     },
-    onRekogition: function(){
+    onRekogition: function(e){
       if (App.objects.length < -1){
         return false;
       }
 
+      App.startRekognitionProcess();
       var params = {
         Image: {
          S3Object: {
           Bucket: App.bucketName,
-          Name: App.objects[App.objects.length - 1].Key
+          Name: App.fileKey
          }
         },
         MaxLabels: 123,
         MinConfidence: 70
        };
-       
+
       var cred = App.bucket.config.credentials;
-      var rekognition = new AWS.Rekognition({credentials: cred, region: App.s3Region})
+      var rekognition = new AWS.Rekognition({credentials: cred, region: App.region})
       rekognition.detectLabels(params, function(err, data) {
         if (err) {
           console.log(err, err.stack); // an error occurred
@@ -146,6 +159,9 @@ var App = new Vue({
           console.log(data);           // successful response
           App.result = data.Labels;
         }
+
+        App.endRekognitionProcess();
+
       }.bind(this));
     },
     onFileChange: function(e) {
