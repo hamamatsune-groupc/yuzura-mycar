@@ -9,15 +9,15 @@ var App = new Vue({
     awsAccessKey: "",
     awsAccessSecret: "",
     s3Bucket: "yuzura-mycar",
-    s3Region: "ap-northeast-1",
+    s3Region: "us-east-1",
     result: [],
     uploadedImage: "",
     appId: "1984191275151457",
     roleArn: "arn:aws:iam::580796990244:role/yuzura-mycar-facebook-role",
     bucketName: "yuzura-mycar-test",
     region: "us-east-1",
-    fbAuthenticated: false,
-    fbUserId: null,
+    fbAuthenticated: true,
+    fbUserId: "",
     bucket: null,
     objects: []
   },
@@ -72,7 +72,7 @@ var App = new Vue({
     },
     listObjs: function(){
       var results = document.getElementById('results');
-      var prefix = 'facebook-' + App.fbUserId;
+      var prefix = 'facebook-' + this.fbUserId;
       this.bucket.listObjects({
           Prefix: prefix
       }, function (err, data) {
@@ -121,20 +121,23 @@ var App = new Vue({
       }(document, 'script', 'facebook-jssdk'));
     },
     onRekogition: function(){
-      AWS.config.accessKeyId = this.awsAccessKey;
-      AWS.config.secretAccessKey = this.awsAccessSecret;
-      AWS.config.region = "us-east-1";
+      if (App.objects.length < -1){
+        return false;
+      }
+
       var params = {
         Image: {
          S3Object: {
-          Bucket: "yuzura-mycar-us-east-1",
-          Name: "IMG_3266.jpg"
+          Bucket: App.bucketName,
+          Name: App.objects[App.objects.length - 1].Key
          }
         },
         MaxLabels: 123,
         MinConfidence: 70
        };
-      var rekognition = new AWS.Rekognition();
+       
+      var cred = App.bucket.config.credentials;
+      var rekognition = new AWS.Rekognition({credentials: cred, region: App.s3Region})
       rekognition.detectLabels(params, function(err, data) {
         if (err) {
           console.log(err, err.stack); // an error occurred

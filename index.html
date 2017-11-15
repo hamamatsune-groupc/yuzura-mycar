@@ -42,12 +42,14 @@
                   <div id="result"></div>
                 </div>
 
-                <button id="upload-button" class="btn btn-primary" v-bind:style="s3UploadButtonActive" v-on:click="onS3Upload">Upload</button>
                 <div id="results" v-bind:style="uploadResultActive" class="alert alert-info" role="alert">
                 </div>
                 <div id="fb-root">
                 </div>
 
+                <div class="form-group">
+                  <button id="upload-button" class="btn btn-primary" v-bind:style="s3UploadButtonActive" v-on:click="onS3Upload">Upload</button>
+                </div>
                 <div class="form-group">
                   <button class="btn btn-primary" v-on:click="onRekogition">Rekognition</button>
                 </div>
