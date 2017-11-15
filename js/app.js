@@ -72,7 +72,8 @@ var App = new Vue({
             if (err) {
                 results.innerHTML = 'ERROR: ' + err;
             } else {
-                this.listObjs();
+                // this.listObjs();
+                this.onRekogition();
             }
 
             App.endS3Process();
@@ -82,24 +83,24 @@ var App = new Vue({
           results.innerHTML = 'Nothing to upload.';
       }
     },
-    listObjs: function(){
-      var results = document.getElementById('results');
-      var prefix = 'facebook-' + this.fbUserId;
-      this.bucket.listObjects({
-          Prefix: prefix
-      }, function (err, data) {
-          if (err) {
-              results.innerHTML = 'ERROR: ' + err;
-          } else {
-              var objKeys = "";
-              data.Contents.forEach(function (obj) {
-                  objKeys += obj.Key + "<br>";
-              });
-              results.innerHTML = objKeys;
-              this.objects = data.Contents;
-          }
-      }.bind(this));
-    },
+    // listObjs: function(){
+    //   var results = document.getElementById('results');
+    //   var prefix = 'facebook-' + this.fbUserId;
+    //   this.bucket.listObjects({
+    //       Prefix: prefix
+    //   }, function (err, data) {
+    //       if (err) {
+    //           results.innerHTML = 'ERROR: ' + err;
+    //       } else {
+    //           var objKeys = "";
+    //           data.Contents.forEach(function (obj) {
+    //               objKeys += obj.Key + "<br>";
+    //           });
+    //           results.innerHTML = objKeys;
+    //           this.objects = data.Contents;
+    //       }
+    //   }.bind(this));
+    // },
     initializeFacebook: function(){
       window.fbAsyncInit = function () {
         FB.init({
@@ -137,7 +138,7 @@ var App = new Vue({
         return false;
       }
 
-      App.startRekognitionProcess();
+      App.startS3Process();
       var params = {
         Image: {
          S3Object: {
@@ -160,7 +161,7 @@ var App = new Vue({
           App.result = data.Labels;
         }
 
-        App.endRekognitionProcess();
+        App.endS3Process();
 
       }.bind(this));
     },

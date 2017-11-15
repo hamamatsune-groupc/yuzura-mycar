@@ -20,63 +20,50 @@
 <body>
   <div id="app">
     <div class="section">
-        <div class="container">
-
-          <div class="row">
-            <div class="col-md-12">
-              <h1 class="text-center">Yuzura-Mycar</h1>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-offset-3 col-md-6">
-              <!-- <form role="form"> -->
-                <div class="form-group">
-                  <label class="control-label">画像</label>
-                  <input type="file" id="file-chooser" v-on:change="onFileChange">
-                  <div class="row">
-                    <div class="col-md-12">
-                      <a><img class="img-responsive" v-show="uploadedImage" :src="uploadedImage" /></a>
-                    </div>
-                  </div>
-                  <div id="result"></div>
-                </div>
-
-                <div id="results" v-bind:style="uploadResultActive" class="alert alert-info" role="alert">
-                </div>
-                <div id="fb-root">
-                </div>
-
-                <div class="form-group">
-                  <button id="upload-button" class="btn btn-primary" v-bind:style="s3UploadButtonActive" v-on:click="onS3Upload">Upload <i class='fa fa-spinner fa-spin' v-show="onS3Uploading"></i></button>
-                </div>
-                <div class="form-group">
-                  <button class="btn btn-primary" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Processing Rekognition" v-on:click="onRekogition">Rekognition <i class='fa fa-spinner fa-spin' v-show="onRekognitionProcessing"></i></button>
-                </div>
-              <!-- </form>  -->
-            </div>
-          </div>
-
-
-          <!-- FB buttons -->
-          <div class="row">
-            <div class="col-md-12">
-              <div
-                class="fb-like"
-                data-share="true"
-                data-width="450"
-                data-show-faces="true">
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-    <div class="section">
       <div class="container">
         <div class="row">
           <div class="col-md-12">
+            <img src="/images/yuzura-mycar.png" class="center-block img-responsive" id="logo">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section section-primary">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h1 class="text-center">Select Image<br></h1>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-offset-3 col-md-6">
+            <form role="form">
+              <div class="form-group">
+                <div class="input-group input-group-lg">
+                  <input type="file" id="file-chooser" class="form-control" v-on:change="onFileChange">
+                  <div id="result"></div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 text-center">
+            <button id="upload-button" class="btn btn-default btn-lg" v-bind:style="s3UploadButtonActive" v-on:click="onS3Upload">Upload <i class='fa fa-spinner fa-spin' v-show="onS3Uploading"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <img class="img-responsive" v-show="uploadedImage" :src="uploadedImage" />
+            <div id="results" v-bind:style="uploadResultActive" class="alert alert-info" role="alert">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <h3>Rekognition result</h3>
             <table class="table table-bordered">
               <thead>
                 <tr>
@@ -95,6 +82,23 @@
         </div>
       </div>
     </div>
+
+    <div class="section">
+      <div class="container">
+        <div class="row text-center">
+          <div class="col-md-12">
+            <div
+              class="fb-like"
+              data-share="true"
+              data-width="450"
+              data-show-faces="true">
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
   <script src="js/app.js"></script>
