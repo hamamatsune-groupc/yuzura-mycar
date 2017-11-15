@@ -1,6 +1,9 @@
-# yuzura-mycar
+![](https://s3-ap-northeast-1.amazonaws.com/groupc-public/poputelogo.png)
 
-## 構成
+## 概要
+
+- 画像をAmazonS3へアップロードし、Rekognitionにて解析を行い、結果を画面に表示する
+
 
 ### API
 
@@ -10,4 +13,3 @@
 ### 画面イベント制御 / データバインド
 
 - Vue.js
-
