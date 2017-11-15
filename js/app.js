@@ -160,9 +160,6 @@ var App = new Vue({
           console.log(data);           // successful response
           App.result = data.Labels;
         }
-
-        App.endS3Process();
-
       }.bind(this));
     },
     onFileChange: function(e) {
@@ -176,6 +173,34 @@ var App = new Vue({
         this.uploadedImage = e.target.result;
       };
       reader.readAsDataURL(file);
+    },
+    //音を鳴らすよ
+    onSound: function(e) {
+      var minConfidence = 50;
+      var confidenceJson = {};
+      $.ajax({
+	       url: "data.json",
+	       dataType: 'json',
+	       async: false,
+	       success: function(json) {
+		        confidenceJson = json;
+	       }
+      });
+      this.result.forEach(function(label){
+        if (minConfidence <= label.Confidence)
+        {
+          var matchData = confidenceJson.filter(function(item, index){
+            if (item.Name == label.Name) return true;
+          });
+          if (matchData != null && matchData.length > 0)
+          {
+            var sound = new Howl({
+              src: [matchData[0].File], volume : label.Confidence / 100
+            });
+            sound.play();
+          }
+        }
+      });
     }
   }
 })
