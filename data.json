@@ -1,5 +1,7 @@
 [
   {"Name":"Person","File":"mp3/walk-asphalt2.mp3"},
   {"Name":"Cat","File":"mp3/cat3.mp3"},
-  {"Name":"Car","File":"mp3/car-pass1.mp3"}
+  {"Name":"Car","File":"mp3/car-pass1.mp3"},
+  {"Name":"Van","File":"mp3/car-pass1.mp3"},
+  {"Name":"Vehicle","File":"mp3/car-pass1.mp3"}
 ]
