@@ -13,3 +13,23 @@
 ### 画面イベント制御 / データバインド
 
 - Vue.js
+
+## s3_website
+
+s3_websiteを使ってS3へhtmlをアップロードする。
+
+https://github.com/laurilehmijoki/s3_website
+
+#### 設定
+
+```bash
+bundle exec s3_website cfg create
+aws s3 ls --profile group-c
+bundle exec s3_website cfg apply
+```
+
+#### S3へのアップロード
+
+```bash
+bundle exec s3_website push
+```
