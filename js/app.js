@@ -15,10 +15,12 @@ var App = new Vue({
     bucket: null,
     objects: [],
     onS3Uploading: false,
-    onRekognitionProcessing: false
+    onRekognitionProcessing: false,
+    confidenceJson: []
   },
   created: function(){
     this.initializeFacebook();
+    this.getConfidenceJson();
   },
   mounted: function(){
     // テスト用データ
@@ -178,22 +180,22 @@ var App = new Vue({
       };
       reader.readAsDataURL(file);
     },
+    getConfidenceJson: function(){
+      axios.get('data.json')
+        .then(function (response) {
+          App.confidenceJson = response.data;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
     //音を鳴らすよ
     onSound: function(e) {
       var minConfidence = 50;
-      var confidenceJson = {};
-      $.ajax({
-	       url: "data.json",
-	       dataType: 'json',
-	       async: false,
-	       success: function(json) {
-		        confidenceJson = json;
-	       }
-      });
       this.result.forEach(function(label){
         if (minConfidence <= label.Confidence)
         {
-          var matchData = confidenceJson.filter(function(item, index){
+          var matchData = App.confidenceJson.filter(function(item, index){
             if (item.Name == label.Name) return true;
           });
           if (matchData != null && matchData.length > 0)
@@ -201,7 +203,13 @@ var App = new Vue({
             var sound = new Howl({
               src: [matchData[0].File], volume : label.Confidence / 100
             });
-            sound.play();
+
+            var wait = Math.random() * 2500;
+            setTimeout(function(){
+              console.log("play! , wait: " + wait);
+              sound.play();
+            }, wait);
+            
           }
         }
       });

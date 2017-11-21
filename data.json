@@ -1,7 +1,12 @@
 [
   {"Name":"Person","File":"mp3/walk-asphalt2.m4a"},
+  {"Name":"Human","File":"mp3/walk-asphalt2.m4a"},
+  {"Name":"People","File":"mp3/walk-asphalt2.m4a"},
   {"Name":"Cat","File":"mp3/cat3.m4a"},
   {"Name":"Car","File":"mp3/car-pass1.m4a"},
   {"Name":"Van","File":"mp3/car-pass1.m4a"},
-  {"Name":"Vehicle","File":"mp3/car-pass1.m4a"}
+  {"Name":"Vehicle","File":"mp3/car-pass1.m4a"},
+  {"Name":"Seadan","File":"mp3/car-pass1.m4a"},
+  {"Name":"Suv","File":"mp3/car-pass1.m4a"},
+  {"Name":"Transportation","File":"mp3/car-pass1.m4a"}
 ]
