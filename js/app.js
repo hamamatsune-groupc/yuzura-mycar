@@ -16,7 +16,8 @@ var App = new Vue({
     objects: [],
     onS3Uploading: false,
     onRekognitionProcessing: false,
-    confidenceJson: []
+    confidenceJson: [],
+    noisy: true
   },
   created: function(){
     this.initializeFacebook();
@@ -200,16 +201,29 @@ var App = new Vue({
           });
           if (matchData != null && matchData.length > 0)
           {
-            var sound = new Howl({
-              src: [matchData[0].File], volume : label.Confidence / 100
-            });
-
-            var wait = Math.random() * 2500;
-            setTimeout(function(){
-              console.log("play! , wait: " + wait);
-              sound.play();
-            }, wait);
-            
+            if (App.noisy){
+              matchData[0].Files.forEach(function(file){
+                var sound = new Howl({
+                  src: [file], volume : label.Confidence / 100
+                });
+                var wait = Math.random() * 5000;
+                setTimeout(function(){
+                  console.log("play! , wait: " + wait);
+                  sound.play();
+                }, wait);
+              });
+            }
+            else{
+              var sound = new Howl({
+                src: [matchData[0].File], volume : label.Confidence / 100
+              });
+  
+              var wait = Math.random() * 2500;
+              setTimeout(function(){
+                console.log("play! , wait: " + wait);
+                sound.play();
+              }, wait);
+            }
           }
         }
       });
