@@ -149,8 +149,8 @@ var App = new Vue({
           Name: App.fileKey
          }
         },
-        MaxLabels: 123,
-        MinConfidence: 70
+        MaxLabels: 20,
+        MinConfidence: 50
        };
 
       var cred = App.bucket.config.credentials;
@@ -217,7 +217,7 @@ var App = new Vue({
               var sound = new Howl({
                 src: [matchData[0].File], volume : label.Confidence / 100
               });
-  
+
               var wait = Math.random() * 2500;
               setTimeout(function(){
                 console.log("play! , wait: " + wait);
