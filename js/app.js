@@ -42,8 +42,13 @@ var App = new Vue({
     }
   },
   methods: {
-    imageLogoClick: function(){
-      $("#file-chooser").click();
+    onUploadLogoClick: function(){
+      try{
+        $("#file-chooser").click();
+      }
+      catch(ex){
+        alert(ex);
+      }
     },
     startS3Process: function(){
       this.onS3Uploading = true;
